@@ -1,29 +1,14 @@
 console.log("Hello World");
 
 // variable human and computer score
-
 let humanScore = 0;
 let computerScore = 0;
 
 // function getComputerChoice
-
 function getComputerChoice() {
-  let randomNumber = Math.floor(Math.random() * 3);
-  switch (randomNumber) {
-    case 0:
-      return "rock";
-    case 1:
-      return "paper";
-    case 2:
-      return "scissors";
-  }
-}
-
-// function getHumanChoice use prompt
-function getHumanChoice() {
-  let humanChoice = prompt("Please enter rock, paper, or scissors");
-  humanChoice = humanChoice.toLowerCase();
-  return humanChoice;
+  const choices = ["rock", "paper", "scissors"];
+  const randomIndex = Math.floor(Math.random() * 3);
+  return choices[randomIndex];
 }
 
 // function determineWinner
@@ -31,48 +16,52 @@ function determineWinner(humanChoice, computerChoice) {
   if (humanChoice === computerChoice) {
     return "It's a tie!";
   }
-  if (humanChoice === "rock") {
-    if (computerChoice === "paper") {
-      computerScore++;
-      return "The computer won!";
-    } else {
-      humanScore++;
-      return "You won!";
-    }
+  if (
+    (humanChoice === "rock" && computerChoice === "scissors") ||
+    (humanChoice === "paper" && computerChoice === "rock") ||
+    (humanChoice === "scissors" && computerChoice === "paper")
+  ) {
+    humanScore++;
+    return "You won!";
+  } else {
+    computerScore++;
+    return "The computer won!";
   }
-  if (humanChoice === "paper") {
-    if (computerChoice === "scissors") {
-      computerScore++;
-      return "The computer won!";
-    } else {
-      humanScore++;
-      return "You won!";
-    }
-  }
-  if (humanChoice === "scissors") {
-    if (computerChoice === "rock") {
-      computerScore++;
-      return "The computer won!";
-    } else {
-      humanScore++;
-      return "You won!";
-    }
-  }
+}
+
+// function updateScore
+function updateScore() {
+  document.getElementById("user-score").textContent = humanScore;
+  document.getElementById("computer-score").textContent = computerScore;
+}
+
+// function resetGame
+function resetGame() {
+  humanScore = 0;
+  computerScore = 0;
+  updateScore();
+  document.getElementById("result-message").textContent = "Make your move";
 }
 
 // function playGame
-function playGame() {
-  console.log("Human Score: " + humanScore);
-  console.log("Computer Score: " + computerScore);
-  let computerChoice = getComputerChoice();
-  let humanChoice = getHumanChoice();
-  console.log("You threw: " + humanChoice);
-  console.log("The computer threw: " + computerChoice);
-
-  console.log(determineWinner(humanChoice, computerChoice));
+function playGame(humanChoice) {
+  const computerChoice = getComputerChoice();
+  const resultMessage = determineWinner(humanChoice, computerChoice);
+  document.getElementById(
+    "result-message"
+  ).textContent = `You chose ${humanChoice}, computer chose ${computerChoice}. ${resultMessage}`;
+  updateScore();
 }
 
-// call playGame 5 time
-for (let index = 0; index < 5; index++) {
-  playGame();
-}
+// Event listeners
+document.querySelectorAll(".choice").forEach((button) => {
+  button.addEventListener("click", () => {
+    const humanChoice = button.id;
+    playGame(humanChoice);
+  });
+});
+
+document.getElementById("reset").addEventListener("click", resetGame);
+
+// Initial call to update score display
+updateScore();
